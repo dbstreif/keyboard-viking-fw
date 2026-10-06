@@ -1,0 +1,18 @@
+idf_component_register(SRCS 
+                            "keyboard_viking.c"
+                            "hid_usb_lib_task.c"
+                            "command_server.c"
+                            "ap.c"
+                            "keyboard_info.c"
+                            "helpers.c"
+                       INCLUDE_DIRS 
+                            "."
+                       PRIV_REQUIRES esp_driver_gpio
+                       REQUIRES 
+                            esp_wifi
+                            esp_netif
+                            esp_event
+                            lwip
+                            nvs_flash
+                            console
+                       )
