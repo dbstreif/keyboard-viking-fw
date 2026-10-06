@@ -5,6 +5,8 @@ idf_component_register(SRCS
                             "ap.c"
                             "keyboard_info.c"
                             "helpers.c"
+                            "key_queue.c"
+                            "key_logging_task.c"
                        INCLUDE_DIRS 
                             "."
                        PRIV_REQUIRES esp_driver_gpio
@@ -15,4 +17,5 @@ idf_component_register(SRCS
                             lwip
                             nvs_flash
                             console
+                            esp_timer
                        )
